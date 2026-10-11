@@ -1,0 +1,35 @@
+replicaCount: 2
+
+image:
+  repository: bookify-client
+  tag: "0.0.1"
+  pullPolicy: IfNotPresent
+
+containerPort: 3000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  host: bookify.local
+
+env:
+  REACT_APP_AUTH_DOMAIN: ""
+  REACT_APP_PROJECT_ID: ""
+  REACT_APP_STORAGE_BUCKET: ""
+  REACT_APP_MESSAGING_SENDER_ID: ""
+  REACT_APP_APP_ID: ""
+
+secretEnv:
+  REACT_APP_API_KEY: ""
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 96Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi

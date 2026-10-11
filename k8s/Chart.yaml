@@ -1,0 +1,6 @@
+apiVersion: v2
+name: bookify-client
+description: Helm chart for the Bookify React client
+type: application
+version: 0.2.0
+appVersion: "0.0.1"
