@@ -1,0 +1,48 @@
+---
+- name: Set up nginx as a reverse proxy for the frontend
+  hosts: web
+  become: true
+
+  vars:
+    app_port: 3000
+    server_name: _
+
+  tasks:
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: frontend site config into sites-available
+      ansible.builtin.template:
+        src: templates/frontend.j2
+        dest: /etc/nginx/sites-available/frontend
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload nginx
+
+    - name: Enable the frontend site
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/frontend
+        dest: /etc/nginx/sites-enabled/frontend
+        state: link
+      notify: Reload nginx
+
+    - name: Get the default site out of the way
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: Reload nginx
+
+    - name: Make sure nginx is running and starts on boot
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Reload nginx
+      ansible.builtin.shell: nginx -t && systemctl reload nginx
